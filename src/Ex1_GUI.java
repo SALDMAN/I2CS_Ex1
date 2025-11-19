@@ -1,4 +1,3 @@
-package assignments.Ex1;
 //import assignments.Ex1.sol.Ex1_Sol;
 
 /**
@@ -16,7 +15,7 @@ public class Ex1_GUI {
 		double min = -10, max=10;
         int samples = 16;
 		StdDraw.setScale(min, max);
-		StdDraw.clear();
+        StdDraw.clear();
 		double[] po4 = {2,1,-0.7, -0.02,0.02};
         double[] po3 = Ex1.derivative(po4);
         testGUI(po3,po4, min, max, samples);

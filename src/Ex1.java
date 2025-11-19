@@ -1,4 +1,3 @@
-package assignments.Ex1;
 
 /**
  * Introduction to Computer Science 2026, Ariel University,
@@ -12,7 +11,8 @@ package assignments.Ex1;
  * @author boaz.benmoshe
 
  */
-public class Ex1 {
+public class
+Ex1 {
 	/** Epsilon value for numerical computation, it serves as a "close enough" threshold. */
 	public static final double EPS = 0.001; // the epsilon to be used for the root approximation.
 	/** The zero polynomial function is represented as an array with a single (0) entry. */
@@ -168,19 +168,31 @@ public class Ex1 {
          /////////////////// */
 		return ans;
 	}
-	/**
-	 * This function computes the polynomial function which is the sum of two polynomial functions (p1,p2)
-	 * @param p1
-	 * @param p2
-	 * @return
-	 */
-	public static double[] add(double[] p1, double[] p2) {
-		double [] ans = ZERO;//
-        /** add you code below
-
-         /////////////////// */
-		return ans;
-	}
+        /**
+         * This function computes the polynomial function which is the sum of two polynomial functions (p1,p2)
+         * @param p1
+         * @param p2
+         * @return
+         */
+        public static double[] add(double[] p1, double[] p2) {
+            double [] ans;
+            int l=0;
+            if (p1.length>p2.length) {ans=new double[p1.length];}
+            else if (p2.length>p1.length) {ans=new double[p2.length];}
+            else {ans=new double[p1.length];}
+            for (int i = 0; i < p1.length&&i<p2.length; i++) {
+                ans[i]=p1[i]+p2[i];
+                l=i;
+            }
+            if (p1.length>p2.length) {
+                for (int i =l; i<p1.length;i++) {ans[i]=p1[i];
+                }
+            }
+            else{
+                for (int i=l; i<p2.length;i++) {ans[i]=p2[i];}
+            }
+            return ans;
+        }
 	/**
 	 * This function computes the polynomial function which is the multiplication of two polynoms (p1,p2)
 	 * @param p1

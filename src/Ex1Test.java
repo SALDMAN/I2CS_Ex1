@@ -1,4 +1,4 @@
-package assignments.Ex1;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,17 +19,17 @@ class Ex1Test {
 	static double[] po1 = {2,2}, po2 = {-3, 0.61, 0.2};;
 	static double[] po3 = {2,1,-0.7, -0.02,0.02};
 	static double[] po4 = {-3, 0.61, 0.2};
-	
+
  	@Test
 	/**
 	 * Tests that f(x) == poly(x).
 	 */
 	void testF() {
-		double fx0 = Ex1.f(po1, 0);
+		double fx0 =Ex1.f(po1, 0);
 		double fx1 = Ex1.f(po1, 1);
 		double fx2 = Ex1.f(po1, 2);
 		assertEquals(fx0, 2, Ex1.EPS);
-		assertEquals(fx1, 4, Ex1.EPS);
+		assertEquals(fx1, 4,Ex1.EPS);
 		assertEquals(fx2, 6, Ex1.EPS);
 	}
 	@Test
@@ -72,6 +72,27 @@ class Ex1Test {
 		double[] p1 = Ex1.add(po1, Ex1.ZERO);
 		assertTrue(Ex1.equals(p1, po1));
 	}
+
+    /**
+     * Tests if the length if the length of the sum is as expected
+     */
+    @Test
+    void testAdd4() {
+        double[] p1 = {2,4,3,2};
+        double[] p2 = {3,2};
+        double[] p3 = Ex1.add(p1, p2);
+        if (p3.length !=4) {
+            fail();
+        }
+    }
+    @Test
+    void testAdd5() {
+        double[] p1 = {2,4,3,2};
+        double[] p2 = {3,2};
+        double[] p3 = Ex1.add(p1, p2);
+        double[] expected = {5,6,3,2};
+        assertTrue(Ex1.equals(p3, expected));
+    }
 	@Test
 	/**
 	 * Tests that p1*0 == 0
@@ -120,7 +141,7 @@ class Ex1Test {
 		assertTrue(Ex1.equals(dp4, dp3));
 	}
 	@Test
-	/** 
+	/**
 	 * Tests the parsing of a polynom in a String like form.
 	 */
 	public void testFromString() {
