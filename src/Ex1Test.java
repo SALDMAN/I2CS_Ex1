@@ -211,7 +211,25 @@ class Ex1Test {
 		assertEquals(a3,area, Ex1.EPS);
 		assertEquals(a100,area, Ex1.EPS);
 	}
-	@Test
+    @Test
+    void testSameValue() {
+        double[] p1 = {0, 1}; // p1(x) = x
+        double[] p2 = {0};    // p2(x) = 0
+        double x1 = 0;
+        double x2 = 2;
+        double eps = Ex1.EPS;
+
+        double x = Ex1.sameValue(p1, p2, x1, x2, eps);
+
+        // בדיקה שה-x בטווח
+        assertTrue(x >= x1 && x <= x2);
+
+        // בדיקה שההפרש קטן מ-eps
+        double diff = Math.abs(Ex1.evaluate(p1, x) - Ex1.evaluate(p2, x));
+        assertTrue(diff < eps);
+    }
+
+    @Test
 	/**
 	 * Test the area function.
 	 */

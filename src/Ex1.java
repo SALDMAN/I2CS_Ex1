@@ -98,24 +98,46 @@ Ex1 {
 		}
 		return ans;
 	}
-	/**
-	 * Given two polynomial functions (p1,p2), a range [x1,x2] and an epsilon eps. This function computes an x value (x1<=x<=x2)
-	 * for which |p1(x) -p2(x)| < eps, assuming (p1(x1)-p2(x1)) * (p1(x2)-p2(x2)) <= 0.
-	 * @param p1 - first polynomial function
-	 * @param p2 - second polynomial function
-	 * @param x1 - minimal value of the range
-	 * @param x2 - maximal value of the range
-	 * @param eps - epsilon (positive small value (often 10^-3, or 10^-6).
-	 * @return an x value (x1<=x<=x2) for which |p1(x) - p2(x)| < eps.
-	 */
-	public static double sameValue(double[] p1, double[] p2, double x1, double x2, double eps) {
-		double ans = x1;
-        /** add you code below
+    // פונקציה להערכת פולינום בנקודה x
+    public static double evaluate(double[] p, double x) {
+        double sum = 0;
+        for (int i = 0; i < p.length; i++) {
+            sum += p[i] * Math.pow(x, i);
+        }
+        return sum;
+    }
 
-         /////////////////// */
-		return ans;
-	}
-	/**
+    // הפונקציה הראשית למציאת x שבו |p1(x)-p2(x)| < eps
+    public static double sameValue(double[] p1, double[] p2, double x1, double x2, double eps) {
+        double f1 = evaluate(p1, x1) - evaluate(p2, x1);
+        double f2 = evaluate(p1, x2) - evaluate(p2, x2);
+
+        if (f1 == 0) return x1;
+        if (f2 == 0) return x2;
+
+        // ביסקשן
+        while ((x2 - x1) > eps) {
+            double xm = (x1 + x2) / 2;
+            double fm = evaluate(p1, xm) - evaluate(p2, xm);
+
+            if (Math.abs(fm) < eps) {
+                return xm; // מצאנו פתרון בתוך הטולרנס
+            }
+
+            if (f1 * fm <= 0) {
+                x2 = xm;
+                f2 = fm;
+            } else {
+                x1 = xm;
+                f1 = fm;
+            }
+        }
+
+        // מחזירים את האמצע אם לא מצאנו בדיוק
+        return (x1 + x2) / 2;
+    }
+
+    /**
 	 * Given a polynomial function (p), a range [x1,x2] and an integer with the number (n) of sample points.
 	 * This function computes an approximation of the length of the function between f(x1) and f(x2) 
 	 * using n inner sample points and computing the segment-path between them.
@@ -161,14 +183,67 @@ Ex1 {
 	 * @param p - a String representing polynomial function.
 	 * @return
 	 */
-	public static double[] getPolynomFromString(String p) {
-		double [] ans = ZERO;//  -1.0x^2 +3.0x +2.0
-        /** add you code below
+    private static String cleanPolynomialString(String p) {
+        p = p.replace("-", "+-"); // סימנים
+        return p.replaceAll("\\s+", ""); // מסיר רווחים
+    }
 
-         /////////////////// */
-		return ans;
-	}
-        /**
+    private static String[] splitMonoms(String p) {
+        return p.split("\\+");
+    }
+
+    private static double parseCoefficient(String coefStr) {
+        if (coefStr.isEmpty() || coefStr.equals("+")) return 1.0;
+        if (coefStr.equals("-")) return -1.0;
+        return Double.parseDouble(coefStr);
+    }
+
+    private static double[] parseMonom(String m) {
+        if (m.isEmpty()) return new double[]{0, 0};
+
+        int degree;
+        double coeff;
+
+        if (m.contains("x^")) {
+            degree = Integer.parseInt(m.substring(m.indexOf("^") + 1));
+            String coefStr = m.substring(0, m.indexOf("x"));
+            coeff = parseCoefficient(coefStr);
+        } else if (m.contains("x")) {
+            degree = 1;
+            String coefStr = m.substring(0, m.indexOf("x"));
+            coeff = parseCoefficient(coefStr);
+        } else {
+            degree = 0;
+            coeff = Double.parseDouble(m);
+        }
+
+        return new double[]{coeff, degree};
+    }
+
+    public static double[] getPolynomFromString(String p) {
+        if (p == null || p.isEmpty()) return new double[]{0};
+        String cleaned = cleanPolynomialString(p);
+        String[] monoms = splitMonoms(cleaned);
+
+        // חיפוש דרגה מקסימלית
+        int maxDegree = 0;
+        for (String m : monoms) {
+            double[] parsed = parseMonom(m);
+            int deg = (int) parsed[1];
+            if (deg > maxDegree) maxDegree = deg;
+        }
+
+        double[] ans = new double[maxDegree + 1];
+
+        for (String m : monoms) {
+            double[] parsed = parseMonom(m);
+            ans[(int) parsed[1]] += parsed[0];
+        }
+
+        return ans;
+    }
+
+    /**
          * This function computes the polynomial function which is the sum of two polynomial functions (p1,p2)
          * @param p1
          * @param p2
