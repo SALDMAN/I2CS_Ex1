@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Introduction to Computer Science 2026, Ariel University,
@@ -11,8 +13,7 @@
  * @author boaz.benmoshe
 
  */
-public class
-Ex1 {
+public class Ex1 {
 	/** Epsilon value for numerical computation, it serves as a "close enough" threshold. */
 	public static final double EPS = 0.001; // the epsilon to be used for the root approximation.
 	/** The zero polynomial function is represented as an array with a single (0) entry. */
@@ -90,16 +91,49 @@ Ex1 {
 	 * @param poly the polynomial function represented as an array of doubles
 	 * @return String representing the polynomial function:
 	 */
-	public static String poly(double[] poly) {
-		String ans = "";
-		if(poly.length==0) {ans="0";}
-		else {
-            /** add you code below
+    public static String poly(double[] poly) {
+        if (poly == null || poly.length == 0) return "0";
 
-             /////////////////// */
-		}
-		return ans;
-	}
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+
+        for (int i = poly.length - 1; i >= 0; i--) {
+            double coef = poly[i];
+            if (Math.abs(coef) < 1e-12) continue; // דלג על 0
+
+            // סימן
+            if (!first) {
+                sb.append(coef >= 0 ? " +" : " -");
+            } else {
+                if (coef < 0) sb.append("-");
+                first = false;
+            }
+
+            double abs = Math.abs(coef);
+
+            // **תיקון: שינוי ל-%.4f**
+
+            // דרגה 0
+            if (i == 0) {
+                sb.append(String.format("%.4f", abs)); // הוחלף מ-%.1f
+            }
+            // דרגה 1
+            else if (i == 1) {
+                if (Math.abs(abs - 1) > 1e-12)
+                    sb.append(String.format("%.4f", abs)); // הוחלף מ-%.1f
+                sb.append("x");
+            }
+            // דרגה ≥ 2
+            else {
+                if (Math.abs(abs - 1) > 1e-12)
+                    sb.append(String.format("%.4f", abs)); // הוחלף מ-%.1f
+                sb.append("x^").append(i);
+            }
+        }
+
+        return first ? "0" : sb.toString();
+    }
+
     // פונקציה להערכת פולינום בנקודה x
     public static double evaluate(double[] p, double x) {
         double sum = 0;
@@ -151,14 +185,40 @@ Ex1 {
 	 * @param numberOfSegments - (A positive integer value (1,2,...).
 	 * @return the length approximation of the function between f(x1) and f(x2).
 	 */
-	public static double length(double[] p, double x1, double x2, int numberOfSegments) {
-		double ans = x1;
-        /** add you code below
+    public static double length(double[] p, double x1, double x2, int numberOfSegments) {
+        if (numberOfSegments <= 0) throw new IllegalArgumentException("numberOfSegments must be positive");
 
-         /////////////////// */
-		return ans;
-	}
-	
+        double dx = (x2 - x1) / numberOfSegments;
+        double length = 0.0;
+
+        double prevX = x1;
+        double prevY = evaluatePolynomial(p, prevX);
+
+        for (int i = 1; i <= numberOfSegments; i++) {
+            double currX = x1 + i * dx;
+            double currY = evaluatePolynomial(p, currX);
+
+            double segment = Math.sqrt(Math.pow(currX - prevX, 2) + Math.pow(currY - prevY, 2));
+            length += segment;
+
+            prevX = currX;
+            prevY = currY;
+        }
+
+        return length;
+    }
+
+    // פונקציה עזר שמחשבת את f(x) עבור פולינום
+    private static double evaluatePolynomial(double[] p, double x) {
+        double result = 0;
+        double xn = 1; // x^0
+        for (double coef : p) {
+            result += coef * xn;
+            xn *= x;
+        }
+        return result;
+    }
+
 	/**
 	 * Given two polynomial functions (p1,p2), a range [x1,x2] and an integer representing the number of Trapezoids between the functions (number of samples in on each polynom).
 	 * This function computes an approximation of the area between the polynomial functions within the x-range.
@@ -170,13 +230,64 @@ Ex1 {
 	 * @param numberOfTrapezoid - a natural number representing the number of Trapezoids between x1 and x2.
 	 * @return the approximated area between the two polynomial functions within the [x1,x2] range.
 	 */
-	public static double area(double[] p1,double[]p2, double x1, double x2, int numberOfTrapezoid) {
-		double ans = 0;
-        /** add you code below
+    public static double area(double[] p1, double[] p2, double x1, double x2, int numberOfTrapezoid) {
+        if (numberOfTrapezoid <= 0) throw new IllegalArgumentException("numberOfTrapezoid must be positive");
 
-         /////////////////// */
-		return ans;
-	}
+        // רשימת נקודות חלוקה (כוללת את קצוות התחום)
+        List<Double> points = new ArrayList<>();
+        points.add(x1);
+
+        // חיפוש נקודות חיתוך בין הפולינומים (ערך מוחלט לאפס)
+        // מחלקים את התחום ל- numberOfTrapezoid * 10 צעדים קטנים כדי למצוא קירוב לחיתוך
+        double step = (x2 - x1) / (numberOfTrapezoid * 10);
+        double prevX = x1;
+        double prevDiff = evaluatePolynomial(p1, prevX) - evaluatePolynomial(p2, prevX);
+
+        for (double x = x1 + step; x <= x2; x += step) {
+            double diff = evaluatePolynomial(p1, x) - evaluatePolynomial(p2, x);
+            if (prevDiff * diff <= 0) { // חיתוך עם ציר ה-x
+                // מציאת נקודה קרובה עם דיוק eps
+                double root = sameValue(p1, p2, prevX, x, 1e-6);
+                points.add(root);
+            }
+            prevX = x;
+            prevDiff = diff;
+        }
+
+        points.add(x2);
+
+        // עכשיו מחלקים כל תת-קטע למספר טרפזים יחסי
+        double area = 0.0;
+        for (int i = 0; i < points.size() - 1; i++) {
+            double start = points.get(i);
+            double end = points.get(i + 1);
+            int segs = Math.max(1, (int)(numberOfTrapezoid * (end - start) / (x2 - x1)));
+
+            area += areaSubsegment(p1, p2, start, end, segs);
+        }
+
+        return area;
+    }
+
+    // חישוב שטח תת-קטע באמצעות טרפזים
+    private static double areaSubsegment(double[] p1, double[] p2, double x1, double x2, int segments) {
+        double dx = (x2 - x1) / segments;
+        double area = 0.0;
+
+        double prevX = x1;
+        double prevY = Math.abs(evaluatePolynomial(p1, prevX) - evaluatePolynomial(p2, prevX));
+
+        for (int i = 1; i <= segments; i++) {
+            double currX = x1 + i * dx;
+            double currY = Math.abs(evaluatePolynomial(p1, currX) - evaluatePolynomial(p2, currX));
+            area += (prevY + currY) / 2.0 * dx;
+            prevX = currX;
+            prevY = currY;
+        }
+
+        return area;
+    }
+
 	/**
 	 * This function computes the array representation of a polynomial function from a String
 	 * representation. Note:given a polynomial function represented as a double array,

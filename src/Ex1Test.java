@@ -1,6 +1,6 @@
 
 import org.junit.jupiter.api.Test;
-
+import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -252,5 +252,49 @@ class Ex1Test {
             }
         }
     }
+@Test
+public void testPoly(){
+        double[] p1= {3,2,6,4};
+        if (!Ex1.poly(p1).equals("4.0x^3 +6.0x^2 +2.0x +3.0"))
+        { fail();
+        }
+    }
+    @Test
+    public void testPolyRandom() {
+        Random rand = new Random();
+        int n = rand.nextInt(10) + 1; // אורך מערך 1-10
+        double[] poly = new double[n];
 
+        // ממלאים את המערך במקדמים רנדומליים (-10 עד 10)
+        for (int i = 0; i < n; i++) {
+            poly[i] = rand.nextDouble() * 20 - 10; // -10 עד 10
+            if (Math.abs(poly[i]) < 1e-12) poly[i] = 0; // אפשר להשאיר אפסים
+        }
+
+        // בונים מחרוזת צפויה
+        StringBuilder expected = new StringBuilder();
+        boolean first = true;
+        for (int i = poly.length - 1; i >= 0; i--) {
+            double coef = poly[i];
+            if (Math.abs(coef) < 1e-12) continue;
+
+            if (!first) expected.append(coef >= 0 ? " +" : " -");
+            else if (coef < 0) expected.append("-");
+            first = false;
+
+            double abs = Math.abs(coef);
+
+            if (i == 0) expected.append(String.format("%.1f", abs));
+            else if (i == 1) {
+                if (Math.abs(abs - 1.0) > 1e-12) expected.append(String.format("%.1f", abs));
+                expected.append("x");
+            } else {
+                if (Math.abs(abs - 1.0) > 1e-12) expected.append(String.format("%.1f", abs));
+                expected.append("x^").append(i);
+            }
+        }
+
+        String result = Ex1.poly(poly);
+        assertEquals(expected.toString(), result);
+    }
 }
