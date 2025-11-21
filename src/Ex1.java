@@ -68,19 +68,21 @@ Ex1 {
 		}
 		return ans;
 	}
-	/** Two polynomials functions are equal if and only if they have the same values f(x) for n+1 values of x,
-	 * where n is the max degree (over p1, p2) - up to an epsilon (aka EPS) value.
-	 * @param p1 first polynomial function
-	 * @param p2 second polynomial function
-	 * @return true iff p1 represents the same polynomial function as p2.
-	 */
-	public static boolean equals(double[] p1, double[] p2) {
-		boolean ans = true;
-        /** add you code below
+        /** Two polynomials functions are equal if and only if they have the same values f(x) for n+1 values of x,
+         * where n is the max degree (over p1, p2) - up to an epsilon (aka EPS) value.
+         * @param p1 first polynomial function
+         * @param p2 second polynomial function
+         * @return true iff p1 represents the same polynomial function as p2.
+         */
+        public static boolean equals(double[] p1, double[] p2) {
+            int n = Math.max(p1.length, p2.length) - 1; // דרגת הפולינום המקסימלית
+            for (int i = 0; i <= n; i++) {
+                double x = i; // או כל n+1 נקודות שונות
+                if (Math.abs(evaluate(p1, x) - evaluate(p2, x)) > EPS) return false;
+            }
+            return true;
 
-         /////////////////// */
-		return ans;
-	}
+        }
 
 	/** 
 	 * Computes a String representing the polynomial function.
