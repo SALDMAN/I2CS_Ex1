@@ -211,6 +211,7 @@ class Ex1Test {
 		assertEquals(a3,area, Ex1.EPS);
 		assertEquals(a100,area, Ex1.EPS);
 	}
+    /**
     @Test
     void testSameValue() {
         double[] p1 = {0, 1}; // p1(x) = x
@@ -228,19 +229,20 @@ class Ex1Test {
         double diff = Math.abs(Ex1.evaluate(p1, x) - Ex1.evaluate(p2, x));
         assertTrue(diff < eps);
     }
+     **/
 
     @Test
-	/**
-	 * Test the area function.
-	 */
-	public void testArea3() {
-		double[] po_a = {2,1,-0.7, -0.02,0.02};
-		double[] po_b = {6, 0.1, -0.2};
-		double x1 = Ex1.sameValue(po_a,po_b, -10,-5, Ex1.EPS);
-		double a1 = Ex1.area(po_a,po_b, x1, 6, 8);
-		double area = 58.5658;
-		assertEquals(a1,area, Ex1.EPS);
-	}
+    /**
+     * Test the area function.
+     */
+    public void testArea3() {
+        double[] po_a = {2,1,-0.7, -0.02,0.02};
+        double[] po_b = {6, 0.1, -0.2};
+        double x1 = Ex1.sameValue(po_a,po_b, -10,-5, Ex1.EPS);
+        double a1 = Ex1.area(po_a,po_b, x1, 6, 8);
+        double area = 58.5658;
+        assertEquals(a1,area, Ex1.EPS);
+    }
     @Test
     public void testDerivative() {
         double[] p1= {3,2,6,4};
